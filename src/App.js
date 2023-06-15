@@ -1,6 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Header from "./header";
 import { Timer, Time, TimerOptions } from "timer-node";
+import Gameboard from "./Gameboard";
 
 function App() {
   const timer = new Timer({ label: "score-timer" });
@@ -12,6 +13,7 @@ function App() {
   return (
     <>
       <Header />
+      <Gameboard />
     </>
   );
 }
