@@ -1,0 +1,26 @@
+body {
+  margin: 0;
+  font-family: sans-serif;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  gap: 5%;
+  align-items: center;
+  background-color: #22222c;
+  color: aliceblue;
+  font-size: 1.5rem;
+}
+
+.char {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.char img {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+}
