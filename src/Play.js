@@ -1,11 +1,18 @@
 import React from "react";
+import uniqid from "uniqid";
 
-function Play({ characters, left, top, display }) {
+function Play({ handleCharChoice, charactersLeft, left, top, display }) {
+  function handleClick(e) {
+    handleCharChoice(e.target.textContent);
+  }
+
   return (
     <div className="play" style={{ left: left, top: top, display: display }}>
       <div className="scope"></div>
-      {characters.map((char) => (
-        <button>{char}</button>
+      {charactersLeft.map((char) => (
+        <button onClick={handleClick} key={uniqid()}>
+          {char}
+        </button>
       ))}
     </div>
   );

@@ -27,8 +27,11 @@ body {
 }
 
 .gameboard {
+  display: flex;
+  justify-content: center;
   position: relative;
   height: 3200px;
+  margin: 0px;
 }
 
 .gameboard img {
@@ -42,7 +45,8 @@ body {
   flex-direction: column;
 }
 
-.play button {
+.play button,
+.character-found {
   background-color: #22222c;
   color: aliceblue;
   border-radius: 4px;
@@ -60,4 +64,21 @@ body {
   height: 60px;
   border: 2px aliceblue solid;
   border-radius: 4px;
+}
+
+.message {
+  position: absolute;
+  top: 30px;
+  width: max-content;
+  z-index: 1;
+  text-align: center;
+  background-color: #22222c;
+  font-size: 1.3rem;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.character-found {
+  position: absolute;
+  z-index: 1;
 }
