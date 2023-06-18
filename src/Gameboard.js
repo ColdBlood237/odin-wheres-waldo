@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
+import { Timer, Time, TimerOptions } from "timer-node";
 import Play from "./Play";
 import uniqid from "uniqid";
 
-function Gameboard({ solutions }) {
-  console.log(solutions);
+function Gameboard({ solutions, timer, timerStopped, setTimerStopped }) {
   const [charactersLeft, setCharactersLeft] = useState(
     solutions.map((char) => char.name)
   );
@@ -18,6 +18,14 @@ function Gameboard({ solutions }) {
 
   let x;
   let y;
+
+  useEffect(() => {
+    if (charactersLeft.length === 0) {
+      console.log("All chars found.");
+      timer.stop();
+      setTimerStopped(timer.isStopped());
+    }
+  }, [charactersLeft]);
 
   function handleClickOnBoard(e) {
     const target = e.currentTarget;
@@ -34,17 +42,13 @@ function Gameboard({ solutions }) {
     setClickY(y);
   }
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowMessage(false);
-    }, 2500); // Duration in milliseconds (e.g., 5000ms = 5 seconds)
-
-    return () => clearTimeout(timer);
-  }, [message]);
-
-  useEffect(() => {
+  function displayMessage() {
     setShowMessage(true);
-  }, [message]);
+
+    setTimeout(() => {
+      setShowMessage(false);
+    }, 2000);
+  }
 
   function handleCharChoice(choice) {
     solutions.forEach((solution) => {
@@ -70,13 +74,17 @@ function Gameboard({ solutions }) {
         } else {
           setMessage(`That's not ${choice}. Try again!`);
         }
+        displayMessage();
       }
     });
   }
 
   return (
     <div className="gameboard" onClick={handleClickOnBoard}>
-      <img src="https://zainthedev.github.io/waldo/static/media/ps2Image.3a523648.webp"></img>
+      <img
+        alt="gameboard"
+        src="https://zainthedev.github.io/waldo/static/media/ps2Image.3a523648.webp"
+      ></img>
       {showMessage && <div className="message">{message}</div>}
       {charsFound.map((char, i) => (
         // change this style when char is found
