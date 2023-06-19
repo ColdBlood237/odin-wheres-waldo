@@ -3,7 +3,9 @@ import { Timer, Time, TimerOptions } from "timer-node";
 import Play from "./Play";
 import uniqid from "uniqid";
 
-function Gameboard({ solutions, timer, timerStopped, setTimerStopped }) {
+const timer = new Timer({ label: "score-timer" });
+
+function Gameboard({ solutions, setTimeSecs, setTimeFormated }) {
   const [charactersLeft, setCharactersLeft] = useState(
     solutions.map((char) => char.name)
   );
@@ -20,10 +22,16 @@ function Gameboard({ solutions, timer, timerStopped, setTimerStopped }) {
   let y;
 
   useEffect(() => {
+    timer.start();
+  }, []);
+
+  useEffect(() => {
     if (charactersLeft.length === 0) {
-      console.log("All chars found.");
       timer.stop();
-      setTimerStopped(timer.isStopped());
+      console.log("All chars found in : ");
+      console.log(timer.time());
+      setTimeSecs(timer.time().s);
+      setTimeFormated(timer.format("%h:%m:%s"));
     }
   }, [charactersLeft]);
 

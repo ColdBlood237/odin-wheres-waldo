@@ -39,32 +39,32 @@ const solutions = await getCharacters(db);
 // const scores = await getScores(db);
 
 function App() {
-  const [timerStopped, setTimerStopped] = useState(false);
-  const timer = new Timer({ label: "score-timer" });
+  const [timeFormated, setTimeFormated] = useState();
+  const [timeSecs, setTimeSecs] = useState(0);
+  const [, setTrigger] = useState(false);
+
+  // useEffect(() => {
+  //   if (timer.isStopped()) {
+  //     setTimerStopped(true);
+  //     console.log("timer stopped in App component");
+  //   }
+  // }, [timerStopped]);
 
   useEffect(() => {
-    timer.start();
-  }, []);
-
-  useEffect(() => {
-    if (timer.isStopped()) {
-      setTimerStopped(true);
-      console.log("timer stopped in App component");
-    }
-  }, [timerStopped]);
+    setTrigger((prevTrigger) => !prevTrigger);
+  }, [timeSecs]);
 
   return (
     <>
       <Header />
-      {timerStopped ? (
-        <Leaderboard timer={timer} />
-      ) : (
+      {timeSecs === 0 ? (
         <Gameboard
           solutions={solutions}
-          timer={timer}
-          timerStopped={timerStopped}
-          setTimerStopped={setTimerStopped}
+          setTimeSecs={setTimeSecs}
+          setTimeFormated={setTimeFormated}
         />
+      ) : (
+        <Leaderboard timeSecs={timeSecs} timeFormated={timeFormated} />
       )}
     </>
   );

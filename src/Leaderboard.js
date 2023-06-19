@@ -1,6 +1,6 @@
 import { addDoc, getFirestore, collection, getDocs } from "firebase/firestore";
 import { initializeApp } from "firebase/app";
-import { useEffect } from "react";
+import uniqid from "uniqid";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBPvuAHpYeqib997DT0KSaDOd7wNBNdVcE",
@@ -14,7 +14,6 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-console.log(db);
 
 async function getScores(db) {
   const scoresCol = collection(db, "leaderboard");
@@ -25,34 +24,61 @@ async function getScores(db) {
 
 const scores = await getScores(db);
 
-function Leaderboard({ timer }) {
-  const scoresList = sortAndFormatScores();
+function Leaderboard({ timeSecs, timeFormated }) {
+  const leaderboard = sortAndFormatScores();
+  // console.log(timer.time());
 
   function sortAndFormatScores() {
-    const sorted = scores.map((score) => score.score).sort();
-    const formated = sorted.map((time) => {
-      const hours = Math.floor(time / 3600);
-      time = time - hours * 3600;
-      const minutes = Math.floor(time / 60);
-      const seconds = time - minutes * 60;
-      return `${hours}:${minutes}:${seconds}`;
+    const sorted = scores.sort((a, b) => a.score - b.score);
+    const formated = sorted.map((player) => {
+      const hours = Math.floor(player.score / 3600);
+      player.score = player.score - hours * 3600;
+      const minutes = Math.floor(player.score / 60);
+      const seconds = player.score - minutes * 60;
+      return { name: player.name, time: `${hours}:${minutes}:${seconds}` };
     });
     return formated;
   }
 
-  async function addScoreToDB() {
+  async function addScoreToDB(e) {
+    e.preventDefault();
     const docRef = await addDoc(collection(db, "leaderboard"), {
-      name: "Add Test",
-      score: timer.time().s,
+      name: e.target.elements.gamertag.value,
+      score: timeSecs,
     });
     console.log("Document written with ID: ", docRef.id);
   }
 
-  useEffect(() => {
-    addScoreToDB();
-  }, []);
-
-  return <div className="end-screen"></div>;
+  return (
+    <div className="end-screen">
+      <h3>YOUR TIME:</h3>
+      <p className="time">{timeFormated}</p>
+      <form id="score-form" onSubmit={addScoreToDB}>
+        <label htmlFor="gamertag">Enter your name:</label>
+        <input
+          id="gamertag"
+          type="text"
+          placeholder="Enter name"
+          required
+        ></input>
+        <button type="submit">Submit</button>
+      </form>
+      <h3>HIGH SCORES</h3>
+      <div className="leaderboard">
+        {leaderboard.map((player) => {
+          return (
+            <div key={uniqid()}>
+              <div className="player-div">
+                <span>{player.name}</span>
+                <span>{player.time}</span>
+              </div>
+              <hr></hr>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
 
 export default Leaderboard;
