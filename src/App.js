@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import Header from "./header";
-import { Timer, Time, TimerOptions } from "timer-node";
 import Gameboard from "./Gameboard";
 import { initializeApp } from "firebase/app";
-import { doc, setDoc } from "firebase/firestore";
 import { getFirestore, collection, getDocs } from "firebase/firestore/lite";
 import Leaderboard from "./Leaderboard";
 

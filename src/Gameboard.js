@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Timer, Time, TimerOptions } from "timer-node";
+import { Timer } from "timer-node";
 import Play from "./Play";
 import uniqid from "uniqid";
 
