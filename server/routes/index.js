@@ -10,4 +10,6 @@ router.get("/:id", character_controller.characters_list);
 
 router.get("/:id/leaderboard", player_controller.leaderboard_get);
 
+router.post("/:id/leaderboard", player_controller.leaderboard_post);
+
 module.exports = router;
