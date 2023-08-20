@@ -1,25 +1,38 @@
 import { useEffect, useState } from "react";
-import { Timer } from "timer-node";
 import Play from "./Play";
-import uniqid from "uniqid";
 
-const timer = new Timer({ label: "score-timer" });
-
-function Gameboard({ solutions, setTimeSecs, setTimeFormated }) {
-  const [charactersLeft, setCharactersLeft] = useState(
-    solutions.map((char) => char.name)
-  );
+function Gameboard({ timer, setTimeSecs, setTimeFormated }) {
+  const [characterClicked, setCharacterClicked] = useState("");
+  const [board, setBoard] = useState({});
+  const [charactersLeft, setCharactersLeft] = useState([]);
   const [charsFound, setCharsFound] = useState([]);
   const [left, setLeft] = useState("0px");
   const [top, setTop] = useState("0px");
   const [display, setDisplay] = useState("none");
   const [message, setMessage] = useState("");
   const [showMessage, setShowMessage] = useState(true);
-  const [clickX, setClickX] = useState();
-  const [clickY, setClickY] = useState();
 
-  let x;
-  let y;
+  useEffect(() => {
+    async function fetchData() {
+      const response = await fetch(
+        "http://localhost:3000/64d4cf7abed00d4e911ab0aa/characters"
+      );
+      const characters = await response.json();
+      setCharactersLeft(characters);
+    }
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    async function fetchData() {
+      const response = await fetch(
+        "http://localhost:3000/64d4cf7abed00d4e911ab0aa"
+      );
+      const board = await response.json();
+      setBoard(board);
+    }
+    fetchData();
+  }, []);
 
   useEffect(() => {
     timer.start();
@@ -28,8 +41,6 @@ function Gameboard({ solutions, setTimeSecs, setTimeFormated }) {
   useEffect(() => {
     if (charactersLeft.length === 0) {
       timer.stop();
-      console.log("All chars found in : ");
-      console.log(timer.time());
       setTimeSecs(timer.time().s);
       setTimeFormated(timer.format("%h:%m:%s"));
     }
@@ -37,8 +48,8 @@ function Gameboard({ solutions, setTimeSecs, setTimeFormated }) {
 
   function handleClickOnBoard(e) {
     const target = e.currentTarget;
-    x = e.pageX + target.scrollLeft - target.offsetLeft;
-    y = e.pageY + target.scrollTop - target.offsetTop;
+    let x = e.pageX + target.scrollLeft - target.offsetLeft;
+    let y = e.pageY + target.scrollTop - target.offsetTop;
     if (display === "none") {
       setLeft(`${x - 30}px`);
       setTop(`${y - 30}px`);
@@ -46,8 +57,9 @@ function Gameboard({ solutions, setTimeSecs, setTimeFormated }) {
     } else {
       setDisplay("none");
     }
-    setClickX(x);
-    setClickY(y);
+    if (e.target.tagName === "area") {
+      setCharacterClicked(e.target.id);
+    }
   }
 
   function displayMessage() {
@@ -59,45 +71,41 @@ function Gameboard({ solutions, setTimeSecs, setTimeFormated }) {
   }
 
   function handleCharChoice(choice) {
-    solutions.forEach((solution) => {
-      if (choice === solution.name) {
-        if (
-          clickX >= solution.left[0] &&
-          clickX <= solution.left[1] &&
-          clickY >= solution.top[0] &&
-          clickY <= solution.top[1]
-        ) {
-          setMessage(`You found ${choice}. Nice`);
-          const exactPositionOfTheCharacter = [
-            (solution.left[0] + solution.left[1]) / 2,
-            (solution.top[0] + solution.top[1]) / 2,
-          ];
-          setCharsFound([
-            ...charsFound,
-            { name: choice, position: exactPositionOfTheCharacter },
-          ]);
-          setCharactersLeft(
-            charactersLeft.filter((char) => char !== solution.name)
-          );
-        } else {
-          setMessage(`That's not ${choice}. Try again!`);
-        }
-        displayMessage();
-      }
-    });
+    if (choice.name === characterClicked) {
+      setMessage(`You found ${choice}. Nice`);
+      setCharsFound([...charsFound, choice]);
+      setCharactersLeft(
+        charactersLeft.filter((char) => char.name !== choice.name)
+      );
+    } else {
+      setMessage(`That's not ${choice.name}. Try again!`);
+    }
+    displayMessage();
   }
 
   return (
     <div className="gameboard" onClick={handleClickOnBoard}>
-      <img
-        alt="gameboard"
-        src="https://zainthedev.github.io/waldo/static/media/ps2Image.3a523648.webp"
-      ></img>
+      <img alt="gameboard" src={board.imgURL} useMap="#boardmap"></img>
+      <map name="boardmap">
+        {charactersLeft.map((char) => (
+          <area
+            alt={char.name}
+            shape="rect"
+            key={char._id}
+            id={char.name}
+            coords={char.coords}
+            onClick={() => {
+              console.log(char.name);
+            }}
+          ></area>
+        ))}
+        <area alt="test area" shape="rect" coords="0,0"></area>
+      </map>
       {showMessage && <div className="message">{message}</div>}
       {charsFound.map((char, i) => (
         // change this style when char is found
         <div
-          key={uniqid()}
+          key={char._id}
           id={char.name}
           className="character-found"
           style={{ left: char.position[0], top: char.position[1] }}
@@ -108,7 +116,6 @@ function Gameboard({ solutions, setTimeSecs, setTimeFormated }) {
       <Play
         handleCharChoice={handleCharChoice}
         charactersLeft={charactersLeft}
-        solutions={solutions}
         left={left}
         top={top}
         display={display}
