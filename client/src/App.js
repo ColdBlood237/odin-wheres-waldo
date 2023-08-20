@@ -10,7 +10,7 @@ function App() {
   const [timeSecs, setTimeSecs] = useState(0);
   const [, setTrigger] = useState(false);
 
-  const timer = new Timer({ label: "score-timer" });
+  const [timer, setTimer] = useState(new Timer({ label: "score-timer" }));
 
   useEffect(() => {
     setTrigger((prevTrigger) => !prevTrigger);
@@ -18,13 +18,13 @@ function App() {
 
   return (
     <>
-      <Header />
+      <Header timer={timer} />
       <Gameboard
         timer={timer}
         setTimeSecs={setTimeSecs}
         setTimeFormated={setTimeFormated}
       />
-      <StartingModal />
+      <StartingModal timer={timer} />
       <Leaderboard timeSecs={timeSecs} timeFormated={timeFormated} />
     </>
   );
