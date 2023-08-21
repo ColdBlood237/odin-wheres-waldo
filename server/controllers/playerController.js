@@ -34,7 +34,7 @@ exports.leaderboard_post = [
         username: req.body.username,
       }).exec();
       if (usernameExists) {
-        res.json("Username already used.");
+        res.status(400).send("Username already used.");
       } else {
         await newPlayer.save();
         res.redirect(`/${req.params.id}/leaderboard`);
