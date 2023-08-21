@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 
-function Header({ timer, gameRunning }) {
-  const [timerSecs, setTimerSecs] = useState(timer.time().s);
+function Header({ timer }) {
+  const [timerMS, setTimerMS] = useState(timer.time().s);
 
   useEffect(() => {
-    const interval = setInterval(() => setTimerSecs(timer.time().s), 1000);
+    const interval = setInterval(() => setTimerMS(timer.time().ms), 1);
 
     return () => clearInterval(interval);
   }, []);
@@ -23,7 +23,7 @@ function Header({ timer, gameRunning }) {
         <img src="https://zainthedev.github.io/waldo/static/media/yunaHeader.ec29f948.svg"></img>
         <p>Yuna</p>
       </div>
-      <div className="timer">{timer.format("%h:%m:%s")}</div>
+      <div className="timer">{timer.format("%h:%m:%s.%ms")}</div>
     </div>
   );
 }

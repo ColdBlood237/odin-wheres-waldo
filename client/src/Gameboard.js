@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import ImageMap from "image-map";
+import { useEffect, useState } from "react";
 import Play from "./Play";
 
 function Gameboard({ setGameover, timer }) {
   const [characterClicked, setCharacterClicked] = useState("");
   const [board, setBoard] = useState({});
   const [charactersLeft, setCharactersLeft] = useState([]);
+  const [charactersFetched, setCharactersFetched] = useState(false);
   const [charsFound, setCharsFound] = useState([]);
   const [left, setLeft] = useState("0px");
   const [top, setTop] = useState("0px");
@@ -22,6 +22,7 @@ function Gameboard({ setGameover, timer }) {
       setCharactersLeft(characters);
     }
     fetchData();
+    setCharactersFetched(true);
   }, []);
 
   useEffect(() => {
@@ -36,9 +37,8 @@ function Gameboard({ setGameover, timer }) {
   }, []);
 
   useEffect(() => {
-    if (charactersLeft.length === 0) {
+    if (charactersFetched && charactersLeft.length === 0) {
       timer.stop();
-      console.log("game over");
       setGameover(true);
     }
   }, [charactersLeft]);
@@ -74,12 +74,11 @@ function Gameboard({ setGameover, timer }) {
     }, 2000);
   }
 
-  function handleCharChoice(choice) {
+  async function handleCharChoice(choice) {
     if (choice.name === characterClicked) {
       setMessage(`You found ${choice.name}. Nice`);
-      console.log(`You found ${choice.name}. Nice`);
       setCharsFound([...charsFound, choice]);
-      setCharactersLeft(
+      await setCharactersLeft(
         charactersLeft.filter((char) => char.name !== choice.name)
       );
     } else {
