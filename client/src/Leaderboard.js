@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import uniqid from "uniqid";
+import { Button, Modal, Label, TextInput, Alert } from "flowbite-react";
+import { HiInformationCircle } from "react-icons/hi";
 
-function Leaderboard({ timeSecs, timeFormated }) {
+function Leaderboard({ gameover, timer, timeSecs, timeFormated }) {
   const [leaderboard, setLeaderboard] = useState([undefined]);
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
+  const [openModal, setOpenModal] = useState(undefined);
 
   useEffect(() => {
     async function fetchData() {
@@ -17,12 +19,18 @@ function Leaderboard({ timeSecs, timeFormated }) {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (gameover) {
+      setOpenModal("default");
+    }
+  }, [gameover]);
+
   async function addScoreToDB() {
     const response = await fetch(
       "http://localhost:3000/64d4cf7abed00d4e911ab0aa/leaderboard",
       {
         method: "POST",
-        body: JSON.stringify({ username: username, time: timeSecs }),
+        body: JSON.stringify({ username: username, time: timer.ms() }),
       }
     );
     if (response.json() !== "") {
@@ -31,29 +39,41 @@ function Leaderboard({ timeSecs, timeFormated }) {
   }
 
   return (
-    <div className="end-screen">
-      <h3>YOUR TIME:</h3>
-
-      <p className="time">{timeFormated}</p>
-
-      <form id="score-form" onSubmit={addScoreToDB}>
-        <label htmlFor="username">Enter your username:</label>
-        <input
-          id="username"
-          type="text"
-          placeholder="Enter username"
-          value={username}
-          onChange={(e) => {
-            setUsername(e.target.value);
-          }}
-          required
-        ></input>
-        <button type="submit">Submit</button>
-        <p>{error}</p>
-      </form>
-
-      <h3>HIGH SCORES</h3>
-
+    <Modal show={openModal === "default"}>
+      <div class="flex flex-col items-center p-8">
+        <h3>YOUR TIME:</h3>
+        <p className="time">{timer.format("%h:%m:%s")}</p>
+        <form className="self-stretch" id="score-form" onSubmit={addScoreToDB}>
+          <div className="mb-2 block">
+            <Label htmlFor="username" value="Enter your username:" />
+          </div>
+          <TextInput
+            id="username"
+            placeholder="Enter username"
+            required
+            value={username}
+            onChange={(e) => {
+              setUsername(e.target.value);
+            }}
+            type="email"
+          />
+          <Button className="mt-2" type="submit">
+            Submit
+          </Button>
+          {error !== "" ? (
+            <Alert color="failure" icon={HiInformationCircle}>
+              <span>
+                <p>
+                  <span className="font-medium">{error}</span>
+                </p>
+              </span>
+            </Alert>
+          ) : (
+            <></>
+          )}
+        </form>
+        <h3>HIGH SCORES</h3>
+      </div>
       <div className="leaderboard">
         {leaderboard[0] !== undefined ? (
           leaderboard.map((player) => {
@@ -71,7 +91,7 @@ function Leaderboard({ timeSecs, timeFormated }) {
           <></>
         )}
       </div>
-    </div>
+    </Modal>
   );
 }
 

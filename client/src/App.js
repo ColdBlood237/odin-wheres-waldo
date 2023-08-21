@@ -11,13 +11,19 @@ function App() {
   const [, setTrigger] = useState(false);
 
   const [timer] = useState(new Timer({ label: "score-timer" }));
+  const [gameover, setGameover] = useState(false);
 
   return (
     <>
       <Header timer={timer} />
-      <Gameboard timer={timer} />
+      <Gameboard setGameover={setGameover} timer={timer} />
       <StartingModal timer={timer} />
-      <Leaderboard timeSecs={timeSecs} timeFormated={timeFormated} />
+      <Leaderboard
+        gameover={gameover}
+        timer={timer}
+        timeSecs={timeSecs}
+        timeFormated={timeFormated}
+      />
     </>
   );
 }

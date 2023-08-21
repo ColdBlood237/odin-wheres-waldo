@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import ImageMap from "image-map";
 import Play from "./Play";
 
-function Gameboard({ timer }) {
+function Gameboard({ setGameover, timer }) {
   const [characterClicked, setCharacterClicked] = useState("");
   const [board, setBoard] = useState({});
   const [charactersLeft, setCharactersLeft] = useState([]);
@@ -38,6 +38,8 @@ function Gameboard({ timer }) {
   useEffect(() => {
     if (charactersLeft.length === 0) {
       timer.stop();
+      console.log("game over");
+      setGameover(true);
     }
   }, [charactersLeft]);
 
