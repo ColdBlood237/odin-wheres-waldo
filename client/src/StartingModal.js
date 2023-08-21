@@ -1,14 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Button, Modal } from "flowbite-react";
 
 export default function StartingModal({ timer }) {
-  const modalRef = useRef(null);
   const [openModal, setOpenModal] = useState("default");
 
   function startGame() {
     setOpenModal(undefined);
     timer.start();
-    console.log("timer started " + timer.isStarted());
   }
 
   return (

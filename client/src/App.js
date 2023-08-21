@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Header from "./header";
 import Gameboard from "./Gameboard";
 import Leaderboard from "./Leaderboard";
@@ -10,20 +10,12 @@ function App() {
   const [timeSecs, setTimeSecs] = useState(0);
   const [, setTrigger] = useState(false);
 
-  const [timer, setTimer] = useState(new Timer({ label: "score-timer" }));
-
-  useEffect(() => {
-    setTrigger((prevTrigger) => !prevTrigger);
-  }, [timeSecs]);
+  const [timer] = useState(new Timer({ label: "score-timer" }));
 
   return (
     <>
       <Header timer={timer} />
-      <Gameboard
-        timer={timer}
-        setTimeSecs={setTimeSecs}
-        setTimeFormated={setTimeFormated}
-      />
+      <Gameboard timer={timer} />
       <StartingModal timer={timer} />
       <Leaderboard timeSecs={timeSecs} timeFormated={timeFormated} />
     </>

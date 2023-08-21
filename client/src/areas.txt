@@ -1,0 +1,7 @@
+<img src="https://i.ibb.co/19m2zDf/waldo.webp" usemap="#image-map">
+
+<map name="image-map">
+    <area target="" alt="ratchet" title="ratchet" href="" coords="1906,5463,2115,5753" shape="rect">
+    <area target="" alt="jak" title="jak" href="" coords="3793,4423,4010,4698" shape="rect">
+    <area target="" alt="yuna" title="yuna" href="" coords="804,4026,988,4316" shape="rect">
+</map>

@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import ImageMap from "image-map";
 import Play from "./Play";
 
-function Gameboard({ timer, setTimeSecs, setTimeFormated }) {
+function Gameboard({ timer }) {
   const [characterClicked, setCharacterClicked] = useState("");
   const [board, setBoard] = useState({});
   const [charactersLeft, setCharactersLeft] = useState([]);
@@ -35,14 +36,8 @@ function Gameboard({ timer, setTimeSecs, setTimeFormated }) {
   }, []);
 
   useEffect(() => {
-    timer.start();
-  }, []);
-
-  useEffect(() => {
     if (charactersLeft.length === 0) {
       timer.stop();
-      setTimeSecs(timer.time().s);
-      setTimeFormated(timer.format("%h:%m:%s"));
     }
   }, [charactersLeft]);
 
@@ -57,9 +52,16 @@ function Gameboard({ timer, setTimeSecs, setTimeFormated }) {
     } else {
       setDisplay("none");
     }
-    if (e.target.tagName === "area") {
-      setCharacterClicked(e.target.id);
-    }
+    charactersLeft.forEach((char) => {
+      if (
+        x >= char.rangeX[0] &&
+        x <= char.rangeX[1] &&
+        y >= char.rangeY[0] &&
+        y <= char.rangeY[1]
+      ) {
+        setCharacterClicked(char.name);
+      }
+    });
   }
 
   function displayMessage() {
@@ -72,7 +74,8 @@ function Gameboard({ timer, setTimeSecs, setTimeFormated }) {
 
   function handleCharChoice(choice) {
     if (choice.name === characterClicked) {
-      setMessage(`You found ${choice}. Nice`);
+      setMessage(`You found ${choice.name}. Nice`);
+      console.log(`You found ${choice.name}. Nice`);
       setCharsFound([...charsFound, choice]);
       setCharactersLeft(
         charactersLeft.filter((char) => char.name !== choice.name)
@@ -85,22 +88,8 @@ function Gameboard({ timer, setTimeSecs, setTimeFormated }) {
 
   return (
     <div className="gameboard" onClick={handleClickOnBoard}>
-      <img alt="gameboard" src={board.imgURL} useMap="#boardmap"></img>
-      <map name="boardmap">
-        {charactersLeft.map((char) => (
-          <area
-            alt={char.name}
-            shape="rect"
-            key={char._id}
-            id={char.name}
-            coords={char.coords}
-            onClick={() => {
-              console.log(char.name);
-            }}
-          ></area>
-        ))}
-        <area alt="test area" shape="rect" coords="0,0"></area>
-      </map>
+      <img alt="gameboard" src={board.imgURL} />
+
       {showMessage && <div className="message">{message}</div>}
       {charsFound.map((char, i) => (
         // change this style when char is found
@@ -108,7 +97,10 @@ function Gameboard({ timer, setTimeSecs, setTimeFormated }) {
           key={char._id}
           id={char.name}
           className="character-found"
-          style={{ left: char.position[0], top: char.position[1] }}
+          style={{
+            left: (char.rangeX[0] + char.rangeX[1]) / 2,
+            top: (char.rangeY[0] + char.rangeY[1]) / 2,
+          }}
         >
           {char.name}
         </div>
